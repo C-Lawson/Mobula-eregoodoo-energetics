@@ -1,0 +1,17 @@
+Animal,Area of skin (cm2),Dorsal/ventral,Wing/trunk,Mass (g),Density (g/cm2),Mean density
+Me131217 SP Me57,20.5,Ventral,Trunk,2.147,0.105,0.059
+Me131217 SP Me57,25,Ventral,Trunk,2.635,0.105,
+Me131217 SP Me57,100,Dorsal,Trunk,7.55,0.076,
+Me131217 SP Me57,25,Dorsal,Trunk,3.615,0.145,
+Me131217 SP Me57,49,Ventral,Wing,2.447,0.05,
+Me131217 SP Me57,49,Dorsal,Wing,1.844,0.038,
+Me131217 SP Me57,80,Dorsal,Wing,4.08,0.051,
+Me131217 SP Me57,42,Ventral,Wing,2.684,0.064,
+Me141217-LE1 Me59,49,Ventral,Wing,1.625,0.033,
+Me141217-LE1 Me59,64,Dorsal,Wing,1.867,0.029,
+Me-070218le Me61,100,Ventral,Wing,4.136,0.041,
+Me-070218le Me61,95,Dorsal,Wing,2.884,0.03,
+Me250418 SH Me64,100,Ventral,Wing,4.349,0.043,
+Me250418 SH Me64,100,Dorsal,Wing,5.139,0.051,
+ME250418 Ie Me63,100,Ventral,Wing,4.09,0.041,
+ME250418 Ie Me63,100,Dorsal,Wing,4.12,0.041,

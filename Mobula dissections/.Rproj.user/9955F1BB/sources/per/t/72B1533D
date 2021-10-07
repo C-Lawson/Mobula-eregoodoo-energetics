@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1550540064510.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1431091989",
+    "id" : "72B1533D",
+    "lastKnownWriteTime" : 1596785054,
+    "last_content_update" : 1596785054544,
+    "path" : "C:/Users/uqclaws5/OneDrive - The University of Queensland/Documents/PhD/Lab work/Mobula dissections/HSI.R",
+    "project_path" : "HSI.R",
+    "properties" : {
+        "cursorPosition" : "24,8",
+        "docOutlineVisible" : "1",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

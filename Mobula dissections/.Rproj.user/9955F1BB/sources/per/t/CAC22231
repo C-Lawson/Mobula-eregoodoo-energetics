@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1540770238040.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3758747390",
+    "id" : "CAC22231",
+    "lastKnownWriteTime" : 1596785068,
+    "last_content_update" : 1596785068297,
+    "path" : "C:/Users/uqclaws5/OneDrive - The University of Queensland/Documents/PhD/Lab work/Mobula dissections/Mobula tissue ED analysis.R",
+    "project_path" : "Mobula tissue ED analysis.R",
+    "properties" : {
+        "cursorPosition" : "32,20",
+        "docOutlineVisible" : "1",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

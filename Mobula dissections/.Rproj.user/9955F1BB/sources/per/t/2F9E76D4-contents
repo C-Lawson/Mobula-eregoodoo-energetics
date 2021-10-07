@@ -1,0 +1,288 @@
+#Started 18/11/20 Chris Lawson
+#in response to reviwer comments (revision #1) from J Fish Biol
+#Need to conduct a sensitivity analysis
+#Will provide a range of outputs based on a minimum, a mean (or "best guess") and maximum values in bioE model
+#outputs will be:
+        #1) cost of growth (% of total energy expenditure)
+        #2) cost of maintaining foetus throughout gestation (kJ)
+        #3) total cost of reproduction (kJ and % of total energy expenditure)
+        #4) % of total cost of reproduction that is accon\untedfor by a) mean HSI difference between gravid v non-gravid
+                                                                   #   b) Max HSI difference between gravid v non-gravid. 
+
+#variable inputs to the model will be (min, mean, max, refs):
+  #SMR Ra: 4.88 (g/kg/d) (Dowd et al 2006, converted from 207 mg/kg/h at 28C)
+          #[REPLACED] 2.88 (g/kg/d) (Dowd et al 2006, converted from 120 mg/kg/h at 24C),
+          # 4.392 (average of other Dowd and Lear values, at 27.2C), 
+          # 11.44 (g/kg/d) - average of Dowd and Schindler
+          # 20 (gO2/kg/d; Schindler et al 2004 from data from Carlson et al 1994)
+  #SMR Rb: 0.80 (Payne 2015 megaflume), 0.82 (Sims 2000, White et al 2007), 0.86 (Sims 1996) 
+  #Q10: 1.87 (Du Preez 1977), 2.435, 3.0 (Hopkins & Ceck 1994)
+  #ACT: 0.2 (Schindler et al), 0.5, 1.5 (Papastamatiou 2018 Sci Reports OWT)
+  #Assimilation: 0.37, 0.33, 0.29
+
+
+#Code taken from "metabolic cost of foetus.R' and "cost of growth.R"
+#Housekeeping----
+library(tidyverse)
+library(ggplot2)
+
+
+
+#Parameters ----
+#Constant:
+DWinf <- 130
+to <- -3.25
+k <- 0.12
+#mass(kg) = 0.00003*DiscWidth(cm)^2.84915
+Ma <- 0.00003
+Mb <- 2.84915
+Temp_env <- 25.1
+oxy <- 14.140 #kJ/g
+foet_energy <- 6633 #kJ, based on mass of 1.1 kg and mean ED of 6.03 kJ
+
+
+#Varied for sensitivity analysis:
+Ra_min <- 4.88 # (gO2/kg/d) 
+Ra_mean <- 11.44  #(gO2/kg/d) 
+Ra_max <- 20 #(gO2/kg/d) 
+
+Temp_exp_min <- 28 #24 #temperature Ra was derived at
+Temp_exp_mean <- 24
+Temp_exp_max <- 24
+
+Rb_min <- -0.2
+Rb_mean <- -0.18
+Rb_max <- -0.14
+
+Q10_min <- 1.87
+Q10_mean <- 2.435
+Q10_max <- 3
+
+ACT_min <- 1.2
+ACT_mean <- 1.5
+ACT_max <- 2.5
+
+Assim_min <- 0.37
+Assim_mean <- 0.33 
+Assim_max <- 0.29
+
+#1) Cost of growth ----
+dat_grow <- data.frame(matrix(ncol = 6, nrow = 365*20))
+colnames(dat_grow) <- c("Age (y)", "Disc Width (cm)", "Mass (kg)", "Delta Mass (kg)", "Growth cost (kJ)", "Temp")
+dat_grow$`Age (y)` <- c((1:(365*20))/365)
+dat_grow$`Disc Width (cm)` <- DWinf*(1-exp(-k*(dat_grow$`Age (y)`-to)))
+dat_grow$`Mass (kg)`<- Ma*dat_grow$`Disc Width (cm)`^Mb
+dat_grow$`Delta Mass (kg)` <- (c(0.001, (dat_grow[2:nrow(dat_grow),3]-dat_grow[1:(nrow(dat_grow)-1),3]))) #Taken from bream bioE model
+dat_grow$`Growth cost (kJ)` <- dat_grow$`Delta Mass (kg)`*6700 #see excel file "All rays component masses" for calculation of mean ED
+dat_grow$`Growth cost (kJ)`[1] <- dat_grow$`Growth cost (kJ)`[2] #Change first value to equal second value, first was wrong and stuffing up the graph
+dat_grow$`Temp` <- Temp_env
+dat_grow$`SMRmin (kJ/d)` <- (dat_grow$`Mass (kg)`*oxy*(Ra_min*(dat_grow$`Mass (kg)`^Rb_min)*
+                                                         exp((log(Q10_min)/10)*(dat_grow$Temp-Temp_exp_min))))
+dat_grow$`SMRmean (kJ/d)` <- (dat_grow$`Mass (kg)`*oxy*(Ra_mean*(dat_grow$`Mass (kg)`^Rb_mean)*
+                                                         exp((log(Q10_mean)/10)*(dat_grow$Temp-Temp_exp_mean))))
+dat_grow$`SMRmax (kJ/d)` <- (dat_grow$`Mass (kg)`*oxy*(Ra_max*(dat_grow$`Mass (kg)`^Rb_max)*
+                                                          exp((log(Q10_max)/10)*(dat_grow$Temp-Temp_exp_max))))
+dat_grow$`Respiration_min (kJ/d)` <- ((dat_grow$`SMRmin (kJ/d)`*ACT_min)+dat_grow$`Growth cost (kJ)`)/(1-Assim_min)
+dat_grow$`Respiration_mean (kJ/d)` <- ((dat_grow$`SMRmean (kJ/d)`*ACT_mean)+dat_grow$`Growth cost (kJ)`)/(1-Assim_mean) 
+dat_grow$`Respiration_max (kJ/d)` <- ((dat_grow$`SMRmax (kJ/d)`*ACT_max)+dat_grow$`Growth cost (kJ)`)/(1-Assim_max) 
+dat_grow$`growth/respiration_min (%)` <- dat_grow$`Growth cost (kJ)`/dat_grow$`Respiration_min (kJ/d)`*100
+dat_grow$`growth/respiration_mean (%)` <- dat_grow$`Growth cost (kJ)`/dat_grow$`Respiration_mean (kJ/d)`*100
+dat_grow$`growth/respiration_max (%)` <- dat_grow$`Growth cost (kJ)`/dat_grow$`Respiration_max (kJ/d)`*100
+
+
+ggplot() +
+  geom_line(aes(y = dat_grow$`SMRmin (kJ/d)`, x= dat_grow$`Age (y)`), colour = 'blue') +
+  geom_line(aes(y = dat_grow$`SMRmean (kJ/d)`, x= dat_grow$`Age (y)`), colour = 'black') +
+  geom_line(aes(y = dat_grow$`SMRmax (kJ/d)`, x= dat_grow$`Age (y)`), colour = 'red') 
+
+ggplot() +
+  geom_line(aes(y = dat_grow$`Respiration_min (kJ/d)`, x= dat_grow$`Age (y)`), colour = 'blue') +
+  geom_line(aes(y = dat_grow$`Respiration_mean (kJ/d)`, x= dat_grow$`Age (y)`), colour = 'black') +
+  geom_line(aes(y = dat_grow$`Respiration_max (kJ/d)`, x= dat_grow$`Age (y)`), colour = 'red') 
+
+
+adult_growCost <- dat_grow %>% 
+  filter(`Age (y)` == 12)
+adult_growCost #gives range of values for relative cost of growth
+
+juv_growCost <- dat_grow %>% 
+  filter(`Age (y)` == 1)
+juv_growCost #gives range of values for relative cost of growth
+
+
+ggplot() + 
+  geom_line(data = dat_grow, aes(x = `Age (y)`, y = `growth/respiration_min (%)`), size = 1.25,
+            linetype = "dashed") +
+  geom_line(data = dat_grow, aes(x = `Age (y)`, y = `growth/respiration_mean (%)`), size = 1.25) +
+  geom_line(data = dat_grow, aes(x = `Age (y)`, y = `growth/respiration_max (%)`), size = 1.25,
+            linetype = "dashed") +
+  labs(x= "Age (year)") + 
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 18, colour = "black"), 
+        axis.text.y = element_text(size = 18, colour = "black"),
+        axis.line = element_line(colour = "black", 
+                                 size = 0.5, linetype = "solid"),
+        axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20)) +
+  scale_x_continuous(breaks = seq(0, 19.5,2), expand=c(0.0005,0)) +
+  labs(y = "Growth (% of total energy use)")
+   
+
+ggsave("Figure 2_growth.eps", width = 9, height = 7, units = c("in"), dpi = 600, )
+
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+#2) MR of foetus ----
+dat_E <- data.frame(matrix(ncol = 4, nrow = 365)) 
+colnames(dat_E) <- c("Age(d)", "Temp", "Mass(g)", "Respiration(J/d)")
+
+dat_E$`Age(d)` <- c(1:365)
+dat_E$Temp <- Temp_env
+dat_E$`Mass(g)` <- 0.1*dat_E$`Age(d)`^1.578 #See "mass-age of embryo" spreadsheet (I made this curve up to reach 1.1kg in 365 days)
+dat_E$`Mass(kg)` <- dat_E$`Mass(g)`/1000
+dat_E$`SMRmin (kJ/d)` <- (dat_E$`Mass(kg)`*oxy*(Ra_min*(dat_E$`Mass(kg)`^Rb_min)*
+                                                         exp((log(Q10_min)/10)*(dat_E$Temp-Temp_exp_min))))
+dat_E$`SMRmean (kJ/d)` <- (dat_E$`Mass(kg)`*oxy*(Ra_mean*(dat_E$`Mass(kg)`^Rb_mean)*
+                                                  exp((log(Q10_mean)/10)*(dat_E$Temp-Temp_exp_mean))))
+dat_E$`SMRmax (kJ/d)` <- (dat_E$`Mass(kg)`*oxy*(Ra_max*(dat_E$`Mass(kg)`^Rb_max)*
+                                                   exp((log(Q10_max)/10)*(dat_E$Temp-Temp_exp_max))))
+
+
+ggplot() +
+  geom_line(aes(y = dat_E$`SMRmin (kJ/d)`, x= dat_E$`Age(d)`), colour = 'blue') +
+  geom_line(aes(y = dat_E$`SMRmean (kJ/d)`, x= dat_E$`Age(d)`), colour = 'black') +
+  geom_line(aes(y = dat_E$`SMRmax (kJ/d)`, x= dat_E$`Age(d)`), colour = 'red') 
+
+
+#Total MR costs through gestation:
+sum(dat_E$`SMRmin (kJ/d)`) #10086.53 kJ
+sum(dat_E$`SMRmean (kJ/d)`) #30900.48 kJ, 8923.224 kJ
+sum(dat_E$`SMRmax (kJ/d)`)  #54015.52 kJ, 8810.274 kJ
+
+foet_total_min <- sum(dat_E$`SMRmin (kJ/d)`) + foet_energy #total 16,719.53 kJ
+foet_total_mean <- sum(dat_E$`SMRmean (kJ/d)`) + foet_energy  #37,533.48 kJ . 30900/37533 = 82%
+foet_total_max <- sum(dat_E$`SMRmax (kJ/d)`) + foet_energy #60,648.52 kJ
+
+
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+
+
+#3) Cost of reproduction as percentage of mother total MR (for year) ----
+#Assumes no growth
+dat_MR <-  data.frame(matrix(ncol = 2, nrow = 365))
+colnames(dat_MR) <- c("Age(d)", "Temp")
+
+dat_MR$`Age(d)` <- c(1:365)
+dat_MR$Temp <- Temp_env
+dat_MR$`Mass(kg)` <- 19.2 #average mass of mothers caught in this trial
+
+dat_MR$`Respiration_min (kJ/d)` <- 
+  (dat_MR$`Mass(kg)`*oxy*(Ra_min*(dat_MR$`Mass(kg)`^Rb_min)*
+                            exp((log(Q10_min)/10)*(dat_MR$Temp-Temp_exp_min))))*ACT_min/(1-Assim_min)
+dat_MR$`Respiration_mean (kJ/d)` <- 
+  (dat_MR$`Mass(kg)`*oxy*(Ra_mean*(dat_MR$`Mass(kg)`^Rb_mean)*
+                            exp((log(Q10_mean)/10)*(dat_MR$Temp-Temp_exp_mean))))*ACT_mean/(1-Assim_mean)
+dat_MR$`Respiration_max (kJ/d)` <- 
+  (dat_MR$`Mass(kg)`*oxy*(Ra_max*(dat_MR$`Mass(kg)`^Rb_max)*
+                            exp((log(Q10_max)/10)*(dat_MR$Temp-Temp_exp_max))))*ACT_max/(1-Assim_max)
+
+ggplot() +
+  geom_line(aes(y = dat_MR$`Respiration_min (kJ/d)`, x= dat_MR$`Age(d)`), colour = 'blue') +
+  geom_line(aes(y = dat_MR$`Respiration_mean (kJ/d)`, x= dat_MR$`Age(d)`), colour = 'black') +
+  geom_line(aes(y = dat_MR$`Respiration_max (kJ/d)`, x= dat_MR$`Age(d)`), colour = 'red') 
+
+
+#Percentage cost of reproducton in terms of total energy costs:
+foet_total_min/sum(dat_MR$`Respiration_min (kJ/d)`)*100 #3.93%
+foet_total_mean/sum(dat_MR$`Respiration_mean (kJ/d)`)*100 #2.28%
+foet_total_max/sum(dat_MR$`Respiration_max (kJ/d)`)*100 #1.16%
+
+
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+###
+###
+###
+
+
+
+#4) Capital vs income breeding ----
+
+#Determine difference in kJ of HSI between gravid and non-gravid females (mean diff, with mean mass of mothers 19.2kg)
+#See "HSI.R" for working:
+
+#Difference in Mean HSI between gravid v non-gravid:
+#works out to be a difference of 137.2971 g of liver between gravid and no gravid
+#Now if liver tissue has ED of 23.2 kJ/g:
+avg_HSI_diff <- 137.2971*23.2 #3185.3 kJ
+
+#Compare to cost of repro:
+avg_HSI_diff/foet_total_min*100 #Difference accounts for 19.05% of total reproductive costs.
+avg_HSI_diff/foet_total_mean*100 #Difference accounts for 8.49% of total reproductive costs.
+avg_HSI_diff/foet_total_max*100 #Difference accounts for 5.25% of total reproductive costs.
+
+
+#But check maximum difference in HSI:
+#min HSI for female (gravid) = 2.4%, max HSI for female (mature ovulating) = 5.5%
+((5.5-2.4)/100)*19200
+#works out to be a difference of 595.2 g of liver between gravid and no gravid
+#Now if liver tissue has ED of 23.2 kJ/g:
+max_HSI_diff <- 595.2*23.2 #13,808.64 kJ
+
+max_HSI_diff/foet_total_min*100 #Difference accounts for 82.59% of total reproductive costs.
+max_HSI_diff/foet_total_mean*100 #Difference accounts for 36.79% of total reproductive costs.
+max_HSI_diff/foet_total_max*100 #Difference accounts for 22.77% of total reproductive costs.

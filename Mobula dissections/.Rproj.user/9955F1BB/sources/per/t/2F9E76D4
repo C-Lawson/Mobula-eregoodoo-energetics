@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1605754322921.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "630183257",
+    "id" : "2F9E76D4",
+    "lastKnownWriteTime" : 1606177349,
+    "last_content_update" : 1606177349886,
+    "path" : "C:/Users/uqclaws5/OneDrive - The University of Queensland/Documents/PhD/Lab work/Mobula dissections/Sensitivity Analysis_JFB Revision1.R",
+    "project_path" : "Sensitivity Analysis_JFB Revision1.R",
+    "properties" : {
+        "cursorPosition" : "130,0",
+        "docOutlineVisible" : "1",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
