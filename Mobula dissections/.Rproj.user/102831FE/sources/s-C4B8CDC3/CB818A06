@@ -1,6 +1,6 @@
 {
     "id": "CB818A06",
-    "path": "~/OneDrive - The University of Queensland/Documents/PhD/Lab work/Mobula dissections/Sensitivity Analysis_JFB Revision1.R",
+    "path": "~/Documents/GitHub/Mobula-eregoodoo-energetics/Mobula dissections/Sensitivity Analysis_JFB Revision1.R",
     "project_path": "Sensitivity Analysis_JFB Revision1.R",
     "type": "r_source",
     "hash": "0",
@@ -12,8 +12,9 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "269,41",
-        "scrollLine": "259"
+        "cursorPosition": "24,0",
+        "scrollLine": "0",
+        "docOutlineVisible": "1"
     },
     "folds": "",
     "lastKnownWriteTime": 1633647253,
