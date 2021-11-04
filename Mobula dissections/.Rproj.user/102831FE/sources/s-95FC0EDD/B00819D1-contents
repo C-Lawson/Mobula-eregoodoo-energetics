@@ -6,6 +6,8 @@
         # - vs gestation stage (foetus size?)
         # - HSI vs mass (possibly a GAM for this...? Don't think so...)
 
+#Update 3/11/2021: new sup figure for thesis revision to show timing differences (seasonal) in HSI among male, female gravid and female non-gravid
+
 #Load packages ----
 library(ggplot2)
 library(tidyverse)
@@ -271,6 +273,8 @@ plot1
 ggsave("Figure 3_HSI_3plots.eps", width = 6, height = 6, units = c("in"), dpi = 900)
 
 
+
+#UPDATE SUP MAT FIGURE SEASONAL COMPARISON ---- 3 Nov 2021
 
 
 

@@ -1,6 +1,6 @@
 {
     "id": "B00819D1",
-    "path": "~/OneDrive - The University of Queensland/Documents/PhD/Lab work/Mobula dissections/HSI.R",
+    "path": "~/Documents/GitHub/Mobula-eregoodoo-energetics/Mobula dissections/HSI.R",
     "project_path": "HSI.R",
     "type": "r_source",
     "hash": "0",
@@ -12,14 +12,16 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "docOutlineVisible": "1"
+        "docOutlineVisible": "1",
+        "cursorPosition": "278,0",
+        "scrollLine": "274"
     },
     "folds": "",
-    "lastKnownWriteTime": 1596785054,
+    "lastKnownWriteTime": 1635902319,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1596785054,
+    "last_content_update": 1635902319153,
     "read_only": false,
     "read_only_alternatives": []
 }
