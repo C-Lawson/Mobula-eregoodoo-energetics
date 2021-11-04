@@ -25,6 +25,8 @@ library(cowplot)
 library(visreg)
 library(patchwork)
 library(svglite)
+library(viridis)
+library(RColorBrewer)
 
 dat1 <- read.csv("Mobula_eregoodootenkee reproduction data- Latest update MBB_CL_CL EDITED COLUMNS.csv")
 head(dat1)
@@ -274,12 +276,27 @@ ggsave("Figure 3_HSI_3plots.eps", width = 6, height = 6, units = c("in"), dpi = 
 
 
 
-#UPDATE SUP MAT FIGURE SEASONAL COMPARISON ---- 3 Nov 2021
+#UPDATE SUP MAT FIGURE SEASONAL COMPARISON 3 Nov 2021 ---- 
+#make new dataframe with new column using existing df where male = "adult", female gravid = "gravid,
+    #..and all others (preovulating etc) are female non-gravid. 
+HSI_sup <- HSI
 
+for(i in 1:(nrow(HSI_sup))){
+ifelse(HSI_sup$Stage[i] == "Adult", 
+        HSI_sup$sup_fig[i] <- "Male",
+        ifelse(
+          HSI_sup$Stage[i] == "Gravid",
+          HSI_sup$sup_fig[i] <- "Female Gravid",
+          HSI_sup$sup_fig[i] <- "Female Non-Gravid")
+        )
+  print(i)
+}
 
+ggplot(HSI_sup, aes(x=Season, y = H_S_I, colour = sup_fig)) + geom_boxplot(lwd = 1) +
+  theme_classic() + labs(y = "HSI") + scale_colour_brewer(palette = "Dark2") +
+  theme(legend.title = element_blank())
 
-
-
+ggsave("Sup_Fig_Season.eps", width = 8, height = 6, units = c("in"), dpi = 900)
 
 
 # UNUSED/TESTING/UNKNOWN BELOW ----
